@@ -55,6 +55,7 @@ void		*philo_routine(void *arg);
 // PHILOSOHOPERS ACTIONS //
 void		sleeping(t_philo *philo);
 void		eating(t_philo *philo);
+void		thinking(t_philo *philo);
 
 // CHECK STATES //
 int			time_rn(t_philo *philo);
@@ -73,6 +74,6 @@ int			data_time_rn(t_data *data);
 
 // END PROGRAM //
 void		fin(t_data *data);
-int		error(int ac, char **av);
+int			error(int ac, char **av);
 
 #endif

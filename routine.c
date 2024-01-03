@@ -12,48 +12,36 @@
 
 #include "philo.h"
 
+int		check_death(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->main_check);
+	if(philo->dead == 1)
+	{		
+		pthread_mutex_unlock(&philo->main_check);	
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->main_check);
+	return (0);
+}
+
 void	*philo_routine(void *arg)
 {
 	t_philo *philo;
 
 	philo = (t_philo *) arg;
+	if (philo->id % 2)
+		slumber(philo, philo->data->meal_duration);
 	 while (1)
 	 {
-		//if (check_if_any_died(philo))
-			// return (NULL);
-		//if (check_this_philo_state(philo))
-			// return (NULL);
-		//if (!check_if_any_died(philo))
-		pthread_mutex_lock(&philo->data->print);
-		printf("\t\t%d philo dead = %p\n", time_rn(philo), &philo->dead);	
-		pthread_mutex_unlock(&philo->data->print);
-		pthread_mutex_lock(&philo->main_check);
-		if(philo->dead == 1)
-		{		
-			pthread_mutex_unlock(&philo->main_check);	
+		if (philo->meal_counter == 0)
 			break ;
-		}
-		pthread_mutex_unlock(&philo->main_check);
-		pthread_mutex_lock(&philo->data->print);
-		printf("%d %d is thinking\n", time_rn(philo), philo->id);	
-		pthread_mutex_unlock(&philo->data->print);
-			//check_print("is thinking!\n", time_rn(philo), philo);
-		//if (check_if_any_died(philo))
-			// return (NULL);
-		//if (check_this_philo_state(philo))
-			// return (NULL);
-		//if (check_if_any_died(philo))
-			eating(philo);
-		//if (check_if_any_died(philo))
-			sleeping(philo);
-		pthread_mutex_lock(&philo->main_check);
-		if(philo->dead == 1)
-		{		
-			pthread_mutex_unlock(&philo->main_check);	
+		if (check_death(philo))
 			break ;
-		}
-		pthread_mutex_unlock(&philo->main_check);
-
+		thinking(philo);
+		eating(philo);
+		sleeping(philo);
+		if (check_death(philo))
+			break ;
 	}
 	return (NULL);
 }

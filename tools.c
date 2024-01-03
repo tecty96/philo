@@ -80,12 +80,12 @@ void	slumber(t_philo *philo, int	endofwinter)
 {
 	int	target_time;
 	int	now;
-	
+
 	now = time_rn(philo);
 	target_time = now + endofwinter;
 	if(check_if_any_died(philo))
 		return ;
-	while (now < target_time)
+	while (now <= target_time)
 	{
 		now = time_rn(philo);
 		// if (check_this_philo_state(philo))
