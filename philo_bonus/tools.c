@@ -5,10 +5,11 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: apetre <apetre@student.42perpignan.fr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/21 04:45:29 by apetre            #+#    #+#             */
-/*   Updated: 2023/11/22 23:18:24 by apetre           ###   ########.fr       */
+/*   Created: 2024/01/03 20:07:27 by apetre            #+#    #+#             */
+/*   Updated: 2024/01/03 20:07:27 by apetre           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "philo.h"
 
@@ -66,33 +67,24 @@ size_t	count_size_in_chars(int n)
 	}
 	return (size_in_chars);
 }
-void	check_print(char *str, int time,  t_philo *philo)
+
+int	time_rn_philo(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->data->print);
-	pthread_mutex_lock(&philo->main_check);
-	if (philo->dead == 0 && philo->meal_counter != 0)
-		printf("%d %d %s", time, philo->id, str);
-	pthread_mutex_unlock(&philo->main_check);
-	pthread_mutex_unlock(&philo->data->print);
+	int	time;
+
+	gettimeofday(&philo->philo_time, NULL);
+	time = (philo->philo_time.tv_sec * 1000 + philo->philo_time.tv_usec / 1000)
+			- (philo->data->genesis.tv_sec * 1000 + philo->data->genesis.tv_usec / 1000);
+	return (time);	
 }
 
-void	slumber(t_philo *philo, int	endofwinter)
+int	time_rn_thread(t_philo *philo)
 {
-	int	target_time;
-	int	now;
+	int	time;
 
-	now = time_rn(philo);
-	target_time = now + endofwinter;
-	if(check_if_any_died(philo))
-		return ;
-	while (now <= target_time)
-	{
-		now = time_rn(philo);
-		// if (check_this_philo_state(philo))
-		// 	return ;
-		// if (check_if_any_died(philo))
-		// 	return ;
-		if (philo->dead == 1)
-			break ;
-	}
+	gettimeofday(&philo->thread_time, NULL);
+	time = (philo->thread_time.tv_sec * 1000) + (philo->thread_time.tv_usec / 1000)
+			- (philo->data->genesis.tv_sec * 1000 + philo->data->genesis.tv_usec / 1000);
+	return (time);	
 }
+

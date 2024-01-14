@@ -26,18 +26,19 @@ void	set_all_to_dead(t_data *data)
 	}
 }
 
-int	check_death_timer(t_data *data, int *i, int *time)
+int	check_death_timer(t_data *data, int i, int *time)
 {
-	if (*time > data->philos[*i].eat_or_die)
+	pthread_mutex_lock(&data->philos[i].main_check);
+	if (*time > data->philos[i].eat_or_die)
 	{
-		pthread_mutex_unlock(&data->philos[*i].main_check);
+		pthread_mutex_unlock(&data->philos[i].main_check);
+		data->dead = 1;
 		set_all_to_dead(data);
 		pthread_mutex_lock(&data->print);
-			printf("%d %d has died!\n", *time, data->philos[*i].id);
-		pthread_mutex_unlock(&data->print);
+		printf("%d %d has died!\n", *time, data->philos[i].id);
 		return (1);
 	}
-	pthread_mutex_unlock(&data->philos[*i].main_check);
+	pthread_mutex_unlock(&data->philos[i].main_check);
 	return (0);
 }
 
@@ -48,6 +49,28 @@ void	init_all(t_data *data, char **av)
 	init_philos(data);
 }
 
+int	check_all_philos_meal_counter(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nb_philos)
+	{
+		pthread_mutex_lock(&data->philos[i].main_check);
+		if (data->philos[i].meal_counter == 0)
+		{
+			pthread_mutex_unlock(&data->philos[i].main_check);
+			i++;
+		}
+		else
+		{
+			pthread_mutex_unlock(&data->philos[i].main_check);
+			return (0);
+		}
+	}
+	return (1);
+}
+
 int	main(int ac, char **av)
 {
 	t_data	data;
@@ -55,22 +78,23 @@ int	main(int ac, char **av)
 	int		time;
 
 	if (error(ac, av))
-	 	return (1);
+		return (1);
 	init_all(&data, av);
 	while (data.philos[0].dead != 1)
 	{
+		if (check_all_philos_meal_counter(&data))
+			break ;
 		i = 0;
 		while (i < data.nb_philos)
 		{
 			gettimeofday(&data.data_rightnow, NULL);
 			time = data_time_rn(&data);
-			pthread_mutex_lock(&data.philos[i].main_check);
-			if (check_death_timer(&data, &i, &time))
+			if (check_death_timer(&data, i, &time))
 				break ;
-			pthread_mutex_unlock(&data.philos[i].main_check);
 			i++;
 		}
 	}
+	pthread_mutex_unlock(&data.print);
 	fin(&data);
 	return (0);
 }

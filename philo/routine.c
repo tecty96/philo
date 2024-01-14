@@ -12,12 +12,12 @@
 
 #include "philo.h"
 
-int		check_death(t_philo *philo)
+int	check_death(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->main_check);
-	if(philo->dead == 1)
-	{		
-		pthread_mutex_unlock(&philo->main_check);	
+	if (philo->dead == 1)
+	{
+		pthread_mutex_unlock(&philo->main_check);
 		return (1);
 	}
 	pthread_mutex_unlock(&philo->main_check);
@@ -26,13 +26,11 @@ int		check_death(t_philo *philo)
 
 void	*philo_routine(void *arg)
 {
-	t_philo *philo;
+	t_philo	*philo;
 
 	philo = (t_philo *) arg;
-	if (philo->id % 2)
-		slumber(philo, philo->data->meal_duration);
-	 while (1)
-	 {
+	while (1)
+	{
 		if (philo->meal_counter == 0)
 			break ;
 		if (check_death(philo))

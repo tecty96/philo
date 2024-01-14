@@ -12,11 +12,10 @@
 
 #include "philo.h"
 
-
 void	init_data(t_data *data, char **av)
 {
 	int	i;
-	
+
 	i = 0;
 	data->nb_philos = ft_atoi(av[1]);
 	data->eat_or_die = ft_atoi(av[2]);
@@ -28,7 +27,8 @@ void	init_data(t_data *data, char **av)
 		data->max_meals = -1;
 	data->philos = (t_philo *) malloc(data->nb_philos * sizeof(t_philo));
 	memset(data->philos, 0, data->nb_philos * sizeof(t_philo));
-	data->forks = (pthread_mutex_t *) malloc(data->nb_philos * sizeof(pthread_mutex_t));
+	data->forks = (pthread_mutex_t *)
+		malloc(data->nb_philos * sizeof(pthread_mutex_t));
 	while (i < data->nb_philos)
 	{
 		pthread_mutex_init(&data->forks[i], NULL);
@@ -38,7 +38,7 @@ void	init_data(t_data *data, char **av)
 	pthread_mutex_init(&data->check_dead, NULL);
 	pthread_mutex_init(&data->print, NULL);
 	pthread_mutex_init(&data->check_rightnow, NULL);
-			
+	pthread_mutex_init(&data->take_forks, NULL);
 }
 
 void	init_philos(t_data *data)
@@ -54,16 +54,17 @@ void	init_philos(t_data *data)
 		data->philos[i].meal_counter = data->max_meals;
 		if (i == 0)
 		{
-			data->philos[i].lfork =  &data->forks[data->nb_philos - 1];
-			data->philos[i].rfork =  &data->forks[i];
+			data->philos[i].lfork = &data->forks[data->nb_philos - 1];
+			data->philos[i].rfork = &data->forks[i];
 		}
 		else
 		{
-			data->philos[i].lfork =  &data->forks[i - 1];
-			data->philos[i].rfork =  &data->forks[i];
+			data->philos[i].lfork = &data->forks[i - 1];
+			data->philos[i].rfork = &data->forks[i];
 		}
 		data->philos[i].eat_or_die = data->eat_or_die;
-		pthread_create(&data->philos[i].core, NULL, &philo_routine, &data->philos[i]);
+		pthread_create(&data->philos[i].core, NULL,
+			&philo_routine, &data->philos[i]);
 		i++;
 	}
 }
