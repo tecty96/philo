@@ -52,17 +52,10 @@ void	eating(t_philo *philo)
 	
 	sem_wait(philo->data->print);
 	printf("%d %d is eating!\n", philo->temp_time, philo->id);
-					printf("TIME RN %d\n", philo->temp_time);
-
 	sem_post(philo->data->print);
 
 	sem_wait(philo->data->check_eat_or_die);
 	philo->eat_or_die = philo->temp_time + philo->data->eat_or_die;
-		sem_wait(philo->data->print);
-
-				printf("TIME TO DIE %d\n", philo->eat_or_die);
-		sem_post(philo->data->print);
-
 	sem_post(philo->data->check_eat_or_die);
 	sem_wait(philo->data->meal_counter);
 	if (philo->meal_counter > 0)
@@ -72,6 +65,9 @@ void	eating(t_philo *philo)
 	}
 	if (philo->meal_counter == 0)
 	{
+		usleep(philo->data->meal_duration * 1000);
+		sem_post(philo->data->forks_to_eat);
+		sem_post(philo->data->forks_to_eat);
 		sem_post(philo->data->meal_counter);
 		exit (0);
 	}

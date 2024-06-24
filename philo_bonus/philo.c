@@ -35,4 +35,7 @@ int	main(int ac, char **av)
 		i++;
 	}
 	sem_post(data.print);
+
+	    sem_close(data.forks_to_eat);
+
 }
